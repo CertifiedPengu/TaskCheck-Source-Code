@@ -17,26 +17,45 @@ class TaskEnterGui:
         
     def button(self):
         textlist = self.text.get("1.0", "end-1c").split("\n")
-        if textlist != [""] and len(textlist) <= 8:
+        if textlist != [""] and len(textlist) <= 8 and len(textlist) == len(set(textlist)):
             textstr = str()
-            with open("tasks.txt","w") as f:
-                for i in textlist:
+            with open("tasks.txt","r") as f:
+                file = f.read().split("\n")
+            currentlist = list()
+            for i in file:
+                if i != "":
+                    currentlist.append(i.split(",")[0])
+            print(currentlist)
+            for i in textlist:
+                if i not in currentlist:
                     textstr += i + "\n"
-                textstr += "generate"
+                else:
+                    textstr += file[currentlist.index(i)] + "\n"
+            textstr += "generate"
+            with open("tasks.txt","w") as f:
                 f.write(textstr)
         self.root.destroy()
         run()
 
 class ChecklistGui():
     def __init__(self, taskin:list):
+        print(taskin)
         if taskin[-1] == "generate":
             taskin.pop()
-            self.tasklist = taskin
+            self.tasklist = list()
+            for i in taskin:
+                if type(i) == list:
+                    self.tasklist.append(i[0])
+                else:
+                    self.tasklist.append(i)
             self.taskvals = self.gentaskvals(taskin)
         else:
             self.tasklist = list()
             for i in taskin:
-                self.tasklist.append(i[0])
+                if type(i) == list:
+                    self.tasklist.append(i[0])
+                else:
+                    self.tasklist.append(i)
             self.taskvals = taskin
 
         titlefont = font.Font(size=36, family="Segoe Script")
@@ -69,8 +88,11 @@ class ChecklistGui():
         
     def gentaskvals(self, tasklist:list):
         tdict = list()
-        for i in range(len(tasklist)):
-            tdict.append([tasklist[i],False,False,False,False,False,False,False])
+        for i in tasklist:
+            if "False" not in i and "True" not in i:
+                tdict.append([i,False,False,False,False,False,False,False])
+            else:
+                tdict.append(i)
         return tdict
     
     def setroot(self,root):
