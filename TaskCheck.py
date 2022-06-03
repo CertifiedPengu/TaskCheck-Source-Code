@@ -146,7 +146,7 @@ def run():
 
     #Comment this line to make it work without compiling
     #Remember to uncomment before committing
-    #root.iconbitmap(os.getcwd() + "\icon\pencil.ico")
+    root.iconbitmap(os.getcwd() + "\icon\pencil.ico")
 
     root.mainloop()
 
