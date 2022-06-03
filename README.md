@@ -1,2 +1,2 @@
 # TaskCheck
-A minimalistic to-do list app for depressed people. The code doesn't work unless you compile the executable using py2exe, the setup.py to do that is included.
+A minimalistic to-do list app for depressed people. The source code requires commenting a line towards the end of the program to run on its own. Setup.py is for py2exe, dist is the folder with the executable and all of its dependencies.
