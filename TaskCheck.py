@@ -16,6 +16,11 @@ class TaskEnterGui:
         self.root = root
         
     def button(self):
+        try:
+            f = open("tasks.txt","r")
+        except FileNotFoundError:
+            f = open("tasks.txt","w")
+        f.close()
         textlist = self.text.get("1.0", "end-1c").split("\n")
         if textlist != [""] and len(textlist) <= 8 and len(textlist) == len(set(textlist)):
             textstr = str()
@@ -25,7 +30,6 @@ class TaskEnterGui:
             for i in file:
                 if i != "":
                     currentlist.append(i.split(",")[0])
-            print(currentlist)
             for i in textlist:
                 if i not in currentlist:
                     textstr += i + "\n"
@@ -39,7 +43,6 @@ class TaskEnterGui:
 
 class ChecklistGui():
     def __init__(self, taskin:list):
-        print(taskin)
         if taskin[-1] == "generate":
             taskin.pop()
             self.tasklist = list()
