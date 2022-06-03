@@ -3,10 +3,12 @@ from tkinter import font
 import os
 
 class TaskEnterGui:
-    def __init__(self):
+    def __init__(self, existing=None):
         taskfont = font.Font(size=14, family="Segoe Print")
         Label(text="Enter tasks, one per line, max 8", font=taskfont).pack()
         self.text = Text(height=10, width=60)
+        if existing != None:
+            self.text.insert(END, existing)
         self.text.pack()
         Button(text="Generate To-Do List", font=taskfont, command=self.button).pack()
 
@@ -19,7 +21,7 @@ class TaskEnterGui:
             textstr = str()
             with open("tasks.txt","w") as f:
                 for i in textlist:
-                    textstr += i + ","
+                    textstr += i + "\n"
                 textstr += "generate"
                 f.write(textstr)
         self.root.destroy()
@@ -42,7 +44,8 @@ class ChecklistGui():
         self.boxes = list()
 
         Label(text="To-do List", font=titlefont).grid(row=0, column=1, pady=10)
-        Button(text="Generate New List", font=taskfont, command=self.newlist).grid(row=2,column=1,pady=(0,20))
+        Button(text="Generate New List", font=taskfont, command=self.newlist).grid(row=2,column=1)
+        Button(text="Modify List", font=taskfont, command=self.modlist).grid(row=3, column=1, pady=(10,20))
 
         frame = Frame()
         daylist = ("Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday")
@@ -72,8 +75,12 @@ class ChecklistGui():
     
     def setroot(self,root):
         self.root = root
-
+    
     def endprotocol(self):
+        self.valstotxt()
+        self.root.destroy()
+
+    def valstotxt(self):
         val = str()
         for i in range(len(self.taskvals)):
             val += self.taskvals[i][0]
@@ -82,50 +89,65 @@ class ChecklistGui():
             val += "\n"
         with open("tasks.txt","w") as f:
             f.write(val)
-        self.root.destroy()
     
     def newlist(self):
         with open("tasks.txt","w") as f:
             f.write("")
         self.root.destroy()
         run()
+    
+    def modlist(self):
+        temp = str()
+        for i in self.tasklist:
+            temp += i + "\n"
+        self.endprotocol()
+        root = Tk()
+        tgui = TaskEnterGui(temp)
+        tgui.setroot(root)
+        root.mainloop()
 
 def run():
-    for i in [1]:
+    for l in [1]:
         try:
             f = open("tasks.txt","r")
         except FileNotFoundError:
-            gui = 0
+            guitype = 0
             break
         fread = f.read()
         f.close()
         if len(fread) == 0:
-            gui = 0
+            guitype = 0
             break
         tasklist = fread.split("\n")
         for i in tasklist:
             if i == "":
                 tasklist.remove(i)
-        else:
-            templist = []
-            for i in tasklist:
+        templist = list()
+        for i in tasklist:
+            if len(i.split(",")) > 1:  
                 templist.append(i.split(","))
-            if templist[-1][-1] == "generate":
-                templist = templist[0]
-            tasklist = templist
+            else:
+                templist.append(i)
+        tasklist = templist
         for i in tasklist:
             if i == "":
                 tasklist.remove(i)
-        gui = 1
+        guitype = 1
     root = Tk()
     root.title("To-Do List")
-    if gui == 1:
+    if guitype == 1:
         gui = ChecklistGui(tasklist)
+        gui.valstotxt()
         root.protocol("WM_DELETE_WINDOW", gui.endprotocol)
+        gui.setroot(root)
     else:
-        gui = TaskEnterGui()
-    gui.setroot(root)
-    root.iconbitmap(os.getcwd() + "\icon\pencil.ico")
+        tgui = TaskEnterGui()
+        tgui.setroot(root)
+
+    #Comment this line to make it work without compiling
+    #Remember to uncomment before committing
+    #root.iconbitmap(os.getcwd() + "\icon\pencil.ico")
+
     root.mainloop()
 
 run()
